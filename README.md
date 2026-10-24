@@ -2,10 +2,6 @@
 
 **An experimental CPU ray tracer with a real-time interactive scene editor, written from scratch in C.**
 
-![mandatory](https://img.shields.io/badge/lighting-full%20Phong-brightgreen)
-![bonus](https://img.shields.io/badge/editor-real--time-blue)
-![lang](https://img.shields.io/badge/language-C-lightgrey)
-
 PrismRT began life as **miniRT**, the ray tracing project from the 42 common core.
 That version was never submitted team circumstances changed mid-project so
 instead of shelving it, I kept building. What started as "parse a scene file and

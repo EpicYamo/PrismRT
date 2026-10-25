@@ -3,7 +3,7 @@
 **An experimental CPU ray tracer with a real-time interactive scene editor, written from scratch in C.**
 
 PrismRT began life as **miniRT**, the ray tracing project from the 42 common core.
-That version was never submitted team circumstances changed mid-project so
+That version was never submitted — the team dissolved mid-project — so
 instead of shelving it, I kept building. What started as "parse a scene file and
 render three shapes" grew into a fully interactive playground: fly through the
 scene in real time, click objects to select them, drag gizmos to move and rotate
@@ -13,24 +13,24 @@ and antialiasing.
 
 This is a **learning and experimentation project**, not a production engine.
 Everything runs on the CPU by design: the goal was to understand every ray, every
-intersection and every shading decision not to hide them behind a GPU API.
+intersection and every shading decision, not to hide them behind a GPU API.
 
 ## Features
 
 **Rendering**
-- Full **Phong lighting model** ambient, diffuse and specular, with per-object
+- Full **Phong lighting model** — ambient, diffuse and specular, with per-object
   shininess and specular strength (matte vs. metallic surfaces).
-- **Multiple colored, movable lights** lights are first-class scene objects:
+- **Multiple colored, movable lights** — lights are first-class scene objects:
   spawn, select, drag, recolor, resize and delete them like any other object.
   While navigating, only the first two lights are evaluated for speed; the final
   render evaluates all of them.
-- **Image texture mapping (XPM)** any object can load its own XPM texture at
+- **Image texture mapping (XPM)** — any object can load its own XPM texture at
   runtime, with independent tiling/repeat control per object.
-- **Bump mapping** the texture's brightness is reused as a height field to
+- **Bump mapping** — the texture's brightness is reused as a height field to
   perturb surface normals, faking small-scale relief without changing geometry.
 - **Checkerboard pattern** computed in each object's local face coordinates,
   so it stays clean on rotated cubes, tilted planes and cylinder caps.
-- **Antialiasing** supersampling on the final render pass.
+- **Antialiasing** — supersampling on the final render pass.
 
 **Geometry**
 - Spheres, planes and cylinders (the classics), plus two extra solid primitives:
@@ -40,10 +40,10 @@ intersection and every shading decision not to hide them behind a GPU API.
   with the Möller–Trumbore algorithm.
 
 **Editor**
-- **Real-time navigation** WASD + mouse-look flight camera. `Tab` toggles
+- **Real-time navigation** — WASD + mouse-look flight camera. `Tab` toggles
   between a low-resolution Navigate mode and a full-quality Render mode with a
   live progress display.
-- **Full scene editing** click to select, move/rotate gizmos with numeric
+- **Full scene editing** — click to select, move/rotate gizmos with numeric
   input, an on-screen property panel (color, size, material, texture), spawn and
   delete for every object type, and a 50-step undo/redo stack.
 
@@ -58,7 +58,7 @@ make fclean # remove object files and the binary
 ```
 
 The Makefile builds with `-march=native` for performance. If you need to run
-under `valgrind`, use `make debug` some modern CPU instruction sets are not
+under `valgrind`, use `make debug`: some modern CPU instruction sets are not
 understood by valgrind's instruction decoder.
 
 ## Running
@@ -133,8 +133,8 @@ the object's `Bump` value above `0` — bump mapping reuses the texture's own
 brightness as a height map, so a texture must be assigned first.
 
 > **Note:** checker, shininess, specular, texture and bump are runtime-only
-> properties for now they cannot yet be set inside a `.rt` file, only through
-> the in-app property panel after loading.
+> properties for now: they cannot be set inside a `.rt` file, only through the
+> in-app property panel after loading.
 
 ## Scene File Format
 
@@ -183,6 +183,48 @@ must appear exactly once.
   editor with undo/redo.
 - **Renamed** from miniRT to PrismRT, because at some point "mini" stopped being
   an accurate description.
+
+
+## Requirements
+
+- Linux with X11 (MiniLibX has no Wayland backend)
+- `gcc` and `make`
+- X11 development headers:
+
+```bash
+sudo apt install libx11-dev libxext-dev libbsd-dev
+```
+
+The Makefile builds the bundled `minilibx-linux` first, then PrismRT.
+
+## Project layout
+
+| Path | Contents |
+| --- | --- |
+| `prismRT.c` / `prismRT.h` | entry point, window setup, shared types |
+| `engine/` | render loop, intersections, Phong, textures, gizmos, undo, spawn, input |
+| `parser/` | `.rt` scene parser and validation |
+| `utils/` | vectors, colours, small helpers |
+| `validity_tools/` | scene-file checks used while testing |
+| `scenes/` | demo scenes, from a single sphere to a full hall |
+| `textures/` | XPM textures used by the demos |
+| `minilibx-linux/` | bundled 42 MiniLibX |
+
+## Known limitations
+
+- **Runtime-only materials.** Checker, shininess, specular, texture and bump
+  live in the editor, not in the `.rt` format.
+- **No acceleration structure.** Every ray is tested against every object, so
+  large scenes get slow on the final pass.
+- **Single thread.** The renderer is one loop over the image.
+- **No image export.** The result is displayed in the window; there is no
+  "save PNG/BMP" yet.
+- **Linux/X11 only**, because of MiniLibX.
+
+## Author
+
+Built by **Arda Aycan** ([@EpicYamo](https://github.com/EpicYamo)) as part of the
+42 school curriculum, and extended well past it afterwards.
 
 ## Resources
 
